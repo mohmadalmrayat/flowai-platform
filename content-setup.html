@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تخصيص المحتوى - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🤖";
+            font-size: 2rem;
+        }
+
+        .welcome-message {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            height: 100%;
+            width: 60%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+
+        .step.completed {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.5);
+        }
+
+        .step.active {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.7);
+        }
+
+        .step.pending {
+            background: rgba(255, 255, 255, 0.05);
+            color: #666;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .content-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-type {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .content-type:hover {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .content-type.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .content-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .content-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #00ff00;
+        }
+
+        .content-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .tone-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tone-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tone-option:hover {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .tone-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .tone-emoji {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .tone-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .schedule-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-option:hover {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .schedule-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .schedule-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .schedule-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .schedule-desc {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-next {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .tips-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tips-title {
+            font-size: 1.2rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            color: #ccc;
+        }
+
+        .tips-list li {
+            padding: 0.3rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .tips-list li::before {
+            content: "💡";
+            font-size: 0.9rem;
+            margin-top: 0.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .content-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .tone-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">FlowAI</div>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="welcome-message">
+            <h1 class="welcome-title">تخصيص المحتوى 🎨</h1>
+            <p class="welcome-subtitle">الآن سنقوم بتخصيص نوع المحتوى وأسلوب الكتابة ليناسب علامتك التجارية</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p style="color: #ccc; font-size: 0.9rem;">الخطوة 3 من 5: تخصيص المحتوى</p>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step completed">
+                <span>1️⃣</span>
+                <span>ربط المنصات</span>
+            </div>
+            <div class="step completed">
+                <span>2️⃣</span>
+                <span>إعداد الملف الشخصي</span>
+            </div>
+            <div class="step active">
+                <span>3️⃣</span>
+                <span>تخصيص المحتوى</span>
+            </div>
+            <div class="step pending">
+                <span>4️⃣</span>
+                <span>جدولة النشر</span>
+            </div>
+            <div class="step pending">
+                <span>5️⃣</span>
+                <span>لوحة التحكم</span>
+            </div>
+        </div>
+
+        <!-- Content Types Section -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <span>📝</span>
+                أنواع المحتوى المفضلة
+            </h2>
+            <p style="color: #ccc; margin-bottom: 1.5rem;">اختر أنواع المحتوى التي تريد التركيز عليها (يمكنك اختيار أكثر من نوع)</p>
+            
+            <div class="content-types">
+                <div class="content-type" data-type="promotional">
+                    <span class="content-icon">📢</span>
+                    <div class="content-name">محتوى ترويجي</div>
+                    <div class="content-desc">عروض وخصومات ومنتجات جديدة</div>
+                </div>
+                
+                <div class="content-type" data-type="educational">
+                    <span class="content-icon">📚</span>
+                    <div class="content-name">محتوى تعليمي</div>
+                    <div class="content-desc">نصائح ومعلومات مفيدة</div>
+                </div>
+                
+                <div class="content-type" data-type="behind-scenes">
+                    <span class="content-icon">🎬</span>
+                    <div class="content-name">خلف الكواليس</div>
+                    <div class="content-desc">لمحة عن العمل اليومي</div>
+                </div>
+                
+                <div class="content-type" data-type="testimonials">
+                    <span class="content-icon">⭐</span>
+                    <div class="content-name">آراء العملاء</div>
+                    <div class="content-desc">تقييمات وتجارب العملاء</div>
+                </div>
+                
+                <div class="content-type" data-type="news">
+                    <span class="content-icon">📰</span>
+                    <div class="content-name">أخبار ومستجدات</div>
+                    <div class="content-desc">آخر الأخبار في مجالك</div>
+                </div>
+                
+                <div class="content-type" data-type="interactive">
+                    <span class="content-icon">🎯</span>
+                    <div class="content-name">محتوى تفاعلي</div>
+                    <div class="content-desc">استطلاعات وأسئلة ومسابقات</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Tone Section -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <span>🎭</span>
+                أسلوب الكتابة
+            </h2>
+            <p style="color: #ccc; margin-bottom: 1rem;">اختر الأسلوب الذي يناسب شخصية علامتك التجارية</p>
+            
+            <div class="tone-options">
+                <div class="tone-option" data-tone="professional">
+                    <span class="tone-emoji">👔</span>
+                    <div class="tone-name">احترافي</div>
+                </div>
+                
+                <div class="tone-option" data-tone="friendly">
+                    <span class="tone-emoji">😊</span>
+                    <div class="tone-name">ودود</div>
+                </div>
+                
+                <div class="tone-option" data-tone="casual">
+                    <span class="tone-emoji">😎</span>
+                    <div class="tone-name">عادي</div>
+                </div>
+                
+                <div class="tone-option" data-tone="enthusiastic">
+                    <span class="tone-emoji">🎉</span>
+                    <div class="tone-name">متحمس</div>
+                </div>
+                
+                <div class="tone-option" data-tone="informative">
+                    <span class="tone-emoji">🧠</span>
+                    <div class="tone-name">معلوماتي</div>
+                </div>
+                
+                <div class="tone-option" data-tone="humorous">
+                    <span class="tone-emoji">😄</span>
+                    <div class="tone-name">مرح</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Audience Section -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <span>👥</span>
+                الجمهور المستهدف
+            </h2>
+            
+            <div class="form-group">
+                <label for="targetAge">الفئة العمرية المستهدفة</label>
+                <select id="targetAge" name="targetAge">
+                    <option value="">اختر الفئة العمرية</option>
+                    <option value="18-25">18-25 سنة</option>
+                    <option value="26-35">26-35 سنة</option>
+                    <option value="36-45">36-45 سنة</option>
+                    <option value="46-55">46-55 سنة</option>
+                    <option value="55+">أكثر من 55 سنة</option>
+                    <option value="all">جميع الأعمار</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="targetInterests">اهتمامات الجمهور</label>
+                <textarea id="targetInterests" name="targetInterests" placeholder="مثال: الطعام الصحي، التكنولوجيا، الرياضة، السفر..."></textarea>
+            </div>
+        </div>
+
+        <!-- Posting Schedule Section -->
+        <div class="content-section">
+            <h2 class="section-title">
+                <span>⏰</span>
+                تفضيلات النشر
+            </h2>
+            <p style="color: #ccc; margin-bottom: 1rem;">كم مرة تريد النشر؟</p>
+            
+            <div class="schedule-grid">
+                <div class="schedule-option" data-frequency="daily">
+                    <span class="schedule-icon">📅</span>
+                    <div class="schedule-name">يومياً</div>
+                    <div class="schedule-desc">منشور واحد يومياً</div>
+                </div>
+                
+                <div class="schedule-option" data-frequency="3-times-week">
+                    <span class="schedule-icon">📆</span>
+                    <div class="schedule-name">3 مرات أسبوعياً</div>
+                    <div class="schedule-desc">الأحد، الثلاثاء، الخميس</div>
+                </div>
+                
+                <div class="schedule-option" data-frequency="weekly">
+                    <span class="schedule-icon">🗓️</span>
+                    <div class="schedule-name">أسبوعياً</div>
+                    <div class="schedule-desc">منشور واحد أسبوعياً</div>
+                </div>
+                
+                <div class="schedule-option" data-frequency="custom">
+                    <span class="schedule-icon">⚙️</span>
+                    <div class="schedule-name">مخصص</div>
+                    <div class="schedule-desc">حدد الأوقات بنفسك</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <h3 class="tips-title">
+                <span>💡</span>
+                نصائح مهمة
+            </h3>
+            <ul class="tips-list">
+                <li>اختيار أنواع محتوى متنوعة يزيد من التفاعل</li>
+                <li>الأسلوب الودود يناسب معظم الأعمال التجارية</li>
+                <li>تحديد الجمهور المستهدف يساعد في إنشاء محتوى أكثر فعالية</li>
+                <li>يمكنك تعديل هذه الإعدادات لاحقاً من لوحة التحكم</li>
+            </ul>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation-buttons">
+            <a href="/profile-setup.html" class="nav-btn btn-back">العودة للخطوة السابقة</a>
+            <button class="nav-btn btn-next" id="nextBtn" onclick="goToNextStep()">
+                متابعة للخطوة التالية
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedContentTypes = [];
+        let selectedTone = '';
+        let selectedFrequency = '';
+
+        // Content type selection
+        document.querySelectorAll('.content-type').forEach(type => {
+            type.addEventListener('click', function() {
+                const typeValue = this.dataset.type;
+                
+                if (selectedContentTypes.includes(typeValue)) {
+                    // Remove if already selected
+                    selectedContentTypes = selectedContentTypes.filter(t => t !== typeValue);
+                    this.classList.remove('selected');
+                } else {
+                    // Add if not selected
+                    selectedContentTypes.push(typeValue);
+                    this.classList.add('selected');
+                }
+                
+                updateProgress();
+            });
+        });
+
+        // Tone selection
+        document.querySelectorAll('.tone-option').forEach(tone => {
+            tone.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.tone-option').forEach(t => t.classList.remove('selected'));
+                
+                // Add selection to clicked option
+                this.classList.add('selected');
+                selectedTone = this.dataset.tone;
+                
+                updateProgress();
+            });
+        });
+
+        // Schedule frequency selection
+        document.querySelectorAll('.schedule-option').forEach(schedule => {
+            schedule.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.schedule-option').forEach(s => s.classList.remove('selected'));
+                
+                // Add selection to clicked option
+                this.classList.add('selected');
+                selectedFrequency = this.dataset.frequency;
+                
+                updateProgress();
+            });
+        });
+
+        function updateProgress() {
+            let progress = 60; // Base progress for this step
+            
+            if (selectedContentTypes.length > 0) progress += 5;
+            if (selectedTone) progress += 5;
+            if (selectedFrequency) progress += 5;
+            if (document.getElementById('targetAge').value) progress += 5;
+            
+            document.getElementById('progressFill').style.width = Math.min(progress, 80) + '%';
+        }
+
+        function validateForm() {
+            if (selectedContentTypes.length === 0) {
+                alert('يرجى اختيار نوع محتوى واحد على الأقل');
+                return false;
+            }
+            
+            if (!selectedTone) {
+                alert('يرجى اختيار أسلوب الكتابة');
+                return false;
+            }
+            
+            if (!selectedFrequency) {
+                alert('يرجى اختيار تكرار النشر');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function goToNextStep() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Collect form data
+            const contentData = {
+                contentTypes: selectedContentTypes,
+                tone: selectedTone,
+                targetAge: document.getElementById('targetAge').value,
+                targetInterests: document.getElementById('targetInterests').value.trim(),
+                postingFrequency: selectedFrequency
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('contentData', JSON.stringify(contentData));
+            
+            // Show success message
+            alert('تم حفظ تفضيلات المحتوى بنجاح! 🎉');
+            
+            // Redirect to schedule setup page
+            window.location.href = '/schedule-setup.html';
+        }
+
+        // Form validation on input
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', updateProgress);
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load previously saved data if any
+            const saved = localStorage.getItem('contentData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                
+                // Restore content types
+                if (data.contentTypes) {
+                    selectedContentTypes = data.contentTypes;
+                    data.contentTypes.forEach(type => {
+                        document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+                    });
+                }
+                
+                // Restore tone
+                if (data.tone) {
+                    selectedTone = data.tone;
+                    document.querySelector(`[data-tone="${data.tone}"]`).classList.add('selected');
+                }
+                
+                // Restore frequency
+                if (data.postingFrequency) {
+                    selectedFrequency = data.postingFrequency;
+                    document.querySelector(`[data-frequency="${data.postingFrequency}"]`).classList.add('selected');
+                }
+                
+                // Restore form fields
+                document.getElementById('targetAge').value = data.targetAge || '';
+                document.getElementById('targetInterests').value = data.targetInterests || '';
+                
+                updateProgress();
+            }
+        });
+    </script>
+</body>
+</html>
+

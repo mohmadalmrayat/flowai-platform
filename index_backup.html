@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowAI - منصة إدارة وسائل التواصل الاجتماعي بالذكاء الاصطناعي</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🤖";
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+            transform: translateY(-2px);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+        }
+
+        .btn-secondary:hover {
+            background: #00ff00;
+            color: black;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            display: inline-block;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, white, #00ff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            color: #00ff00;
+            margin-bottom: 2rem;
+            font-weight: normal;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 5rem 2rem;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-badge {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .category-card:hover::before {
+            left: 100%;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff00;
+            box-shadow: 0 20px 40px rgba(0, 255, 0, 0.2);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #00ff00;
+        }
+
+        .category-subtitle {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .category-description {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff00;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #00ff00;
+        }
+
+        .feature-description {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        /* Platforms Section */
+        .platforms {
+            padding: 5rem 2rem;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .platform-card:hover {
+            transform: scale(1.05);
+            border-color: #00ff00;
+        }
+
+        .platform-name {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border-color: #00ff00;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular::before {
+            content: 'الأكثر شعبية';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #00ff00;
+            color: black;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff00;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00ff00;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-period {
+            color: #ccc;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            color: #ccc;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: #00ff00;
+            margin-left: 0.5rem;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 5rem 2rem;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: black;
+        }
+
+        .author-info h4 {
+            color: #00ff00;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3rem 2rem 1rem;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00ff00;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .categories-grid,
+            .features-grid,
+            .pricing-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.popular {
+                transform: none;
+            }
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+
+        .close:hover {
+            color: #00ff00;
+        }
+
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #00ff00;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #ccc;
+        }
+
+        .register-link a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            display: none;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            margin-top: 2rem;
+            border: 1px solid #00ff00;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-stat {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .dashboard-stat h3 {
+            color: #00ff00;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-stat p {
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">FlowAI</a>
+            <ul class="nav-links">
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#features">المميزات</a></li>
+                <li><a href="#categories">الفئات</a></li>
+                <li><a href="#pricing">الأسعار</a></li>
+                <li><a href="#testimonials">آراء العملاء</a></li>
+                <li><a href="#contact">تواصل معنا</a></li>
+            </ul>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-secondary" onclick="openLoginModal()">تسجيل الدخول</a>
+                <a href="#" class="btn btn-primary" onclick="startFreeTrial()">ابدأ مجاناً</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">🚀 منصة الذكاء الاصطناعي الأولى في المنطقة</div>
+            <h1>إدارة ذكية لوسائل التواصل الاجتماعي</h1>
+            <h2>بقوة الذكاء الاصطناعي المتطور</h2>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">دعم متواصل</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">99%</span>
+                    <span class="stat-label">معدل الرضا</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">+1M</span>
+                    <span class="stat-label">منشور تم إنشاؤه</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">+50K</span>
+                    <span class="stat-label">عميل راضٍ</span>
+                </div>
+            </div>
+
+            <p class="hero-description">
+                منصة شاملة ومتطورة تستخدم أحدث تقنيات الذكاء الاصطناعي لإدارة حساباتك على جميع منصات التواصل الاجتماعي بكفاءة عالية وذكاء استثنائي. اكتشف مستقبل التسويق الرقمي اليوم.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary" onclick="startFreeTrial()">ابدأ رحلتك مجاناً</a>
+                <a href="#features" class="btn btn-secondary">اكتشف المميزات</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">🎯 حلول متخصصة</div>
+                <h2 class="section-title">الفئات المتخصصة</h2>
+                <p class="section-description">
+                    حلول مخصصة ومحسنة لكل نوع من الأعمال مع محتوى ذكي يناسب جمهورك المستهدف
+                </p>
+            </div>
+
+            <div class="categories-grid">
+                <div class="category-card">
+                    <span class="category-icon">🍽️</span>
+                    <h3 class="category-title">المطاعم والمقاهي</h3>
+                    <p class="category-subtitle">Restaurants & Cafés</p>
+                    <p class="category-description">
+                        منشورات جذابة على شبكات التواصل الاجتماعي، قوائم طعام رقمية تفاعلية، وحملات ترويجية مميزة تزيد من عدد الزبائن وتعزز الولاء للعلامة التجارية
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <span class="category-icon">🏥</span>
+                    <h3 class="category-title">العيادات والمراكز الصحية</h3>
+                    <p class="category-subtitle">Medical Centers</p>
+                    <p class="category-description">
+                        شارك معلومات طبية موثوقة وعرّف بخدماتك المتميزة، تسويق احترافي للخدمات الطبية مع جدولة الاستشارات وإدارة المواعيد بذكاء
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <span class="category-icon">📚</span>
+                    <h3 class="category-title">التعليم والدروس</h3>
+                    <p class="category-subtitle">Education & Learning</p>
+                    <p class="category-description">
+                        محتوى تعليمي تفاعلي ومبتكر، دورات أونلاين احترافية، شهادات معتمدة، وحلول التعليم الرقمي المتطورة لجميع المراحل التعليمية
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <span class="category-icon">💪</span>
+                    <h3 class="category-title">الأنشطة الرياضية والتجميل</h3>
+                    <p class="category-subtitle">Fitness & Beauty</p>
+                    <p class="category-description">
+                        برامج تدريبية مخصصة، خدمات تجميل متطورة، قصص نجاح ملهمة، وحملات تحفيزية فعالة للصحة واللياقة البدنية والجمال
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <span class="category-icon">🛒</span>
+                    <h3 class="category-title">المنتجات والأسواق</h3>
+                    <p class="category-subtitle">Products & Markets</p>
+                    <p class="category-description">
+                        تسويق ذكي للمنتجات الغذائية والاستهلاكية، إدارة المخزون، البقالة والسوبر ماركت، والتجارة الإلكترونية مع حلول الدفع المتكاملة
+                    </p>
+                </div>
+
+                <div class="category-card">
+                    <span class="category-icon">💒</span>
+                    <h3 class="category-title">خدمات الأفراح والمناسبات</h3>
+                    <p class="category-subtitle">Events & Weddings</p>
+                    <p class="category-description">
+                        تنظيم الأفراح والمناسبات الخاصة، التصوير الاحترافي، الديكور والتنسيق، وجميع خدمات المناسبات مع إدارة شاملة للحجوزات
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">⚡ قوة متطورة</div>
+                <h2 class="section-title">ميزات قوية لنجاح أعمالك</h2>
+                <p class="section-description">
+                    كل ما تحتاجه لإدارة وسائل التواصل الاجتماعي بذكاء وكفاءة عالية مع أحدث التقنيات
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">ذكاء اصطناعي متقدم</h3>
+                    <p class="feature-description">
+                        إنشاء محتوى تلقائي وذكي باستخدام أحدث تقنيات الذكاء الاصطناعي مع تحليل الجمهور وتخصيص المحتوى
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">جدولة المنشورات الذكية</h3>
+                    <p class="feature-description">
+                        جدولة ونشر المحتوى تلقائياً في الأوقات المثلى لجمهورك مع تحليل أفضل أوقات النشر
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">تحليلات شاملة ومتقدمة</h3>
+                    <p class="feature-description">
+                        تقارير مفصلة وإحصائيات دقيقة لقياس أداء حساباتك مع رؤى قابلة للتنفيذ
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">منصات متعددة</h3>
+                    <p class="feature-description">
+                        إدارة Facebook, Instagram, Twitter, LinkedIn, TikTok من مكان واحد مع نشر متزامن
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">إنشاء المحتوى البصري</h3>
+                    <p class="feature-description">
+                        إنشاء صور وفيديوهات احترافية باستخدام الذكاء الاصطناعي مع مكتبة قوالب ضخمة
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">إدارة الفريق المتطورة</h3>
+                    <p class="feature-description">
+                        تعاون متعدد المستخدمين مع إدارة الصلاحيات وسير العمل المنظم
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">مساعد ذكي متقدم</h3>
+                    <p class="feature-description">
+                        مساعد ذكي يقترح المحتوى ويحسن الأداء ويقدم نصائح مخصصة لنمو حساباتك
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">أمان وحماية متقدمة</h3>
+                    <p class="feature-description">
+                        حماية بيانات عالية المستوى مع تشفير متقدم وامتثال كامل لمعايير الخصوصية
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">تطبيق جوال متطور</h3>
+                    <p class="feature-description">
+                        تطبيق جوال شامل لإدارة حساباتك أثناء التنقل مع جميع الميزات المتاحة
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms Section -->
+    <section class="platforms">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">🌐 تكامل شامل</div>
+                <h2 class="section-title">منصات مدعومة</h2>
+                <p class="section-description">
+                    اربط جميع حساباتك في مكان واحد مع تكامل سلس وآمن
+                </p>
+            </div>
+
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #1877f2;">📘</div>
+                    <div class="platform-name">Facebook</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #e4405f;">📷</div>
+                    <div class="platform-name">Instagram</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #1da1f2;">🐦</div>
+                    <div class="platform-name">Twitter</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #0077b5;">💼</div>
+                    <div class="platform-name">LinkedIn</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #ff0050;">🎵</div>
+                    <div class="platform-name">TikTok</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #ff0000;">📺</div>
+                    <div class="platform-name">YouTube</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #fffc00;">👻</div>
+                    <div class="platform-name">Snapchat</div>
+                </div>
+                <div class="platform-card">
+                    <div style="font-size: 2rem; color: #bd081c;">📌</div>
+                    <div class="platform-name">Pinterest</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">💎 خطط مرنة</div>
+                <h2 class="section-title">اختر الخطة المناسبة لك</h2>
+                <p class="section-description">
+                    خطط مرنة ومتنوعة تناسب جميع أحجام الأعمال من الشركات الناشئة إلى المؤسسات الكبرى
+                </p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="plan-name">مجاني</h3>
+                    <div class="plan-price">$0</div>
+                    <div class="plan-period">إلى الأبد</div>
+                    <ul class="plan-features">
+                        <li>3 حسابات وسائل تواصل</li>
+                        <li>10 منشورات شهرياً</li>
+                        <li>تحليلات أساسية</li>
+                        <li>دعم عبر البريد الإلكتروني</li>
+                        <li>قوالب محدودة</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary" onclick="selectPlan('free')">ابدأ مجاناً</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="plan-name">الأساسية</h3>
+                    <div class="plan-price">$29</div>
+                    <div class="plan-period">شهرياً</div>
+                    <ul class="plan-features">
+                        <li>10 حسابات وسائل تواصل</li>
+                        <li>100 منشور شهرياً</li>
+                        <li>تحليلات متقدمة</li>
+                        <li>دعم فني 24/7</li>
+                        <li>مكتبة قوالب كاملة</li>
+                        <li>جدولة ذكية</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" onclick="selectPlan('basic')">اختر هذه الخطة</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <h3 class="plan-name">الاحترافية</h3>
+                    <div class="plan-price">$79</div>
+                    <div class="plan-period">شهرياً</div>
+                    <ul class="plan-features">
+                        <li>25 حساب وسائل تواصل</li>
+                        <li>منشورات غير محدودة</li>
+                        <li>تحليلات متقدمة + AI</li>
+                        <li>ذكاء اصطناعي متقدم</li>
+                        <li>إدارة الفريق (5 أعضاء)</li>
+                        <li>تقارير مخصصة</li>
+                        <li>أولوية في الدعم</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" onclick="selectPlan('professional')">اختر هذه الخطة</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="plan-name">الوكالات</h3>
+                    <div class="plan-price">$149</div>
+                    <div class="plan-period">شهرياً</div>
+                    <ul class="plan-features">
+                        <li>100 حساب وسائل تواصل</li>
+                        <li>منشورات غير محدودة</li>
+                        <li>تحليلات شاملة</li>
+                        <li>إدارة عملاء متعددين</li>
+                        <li>فريق غير محدود</li>
+                        <li>تقارير العملاء</li>
+                        <li>API متقدم</li>
+                        <li>تدريب مخصص</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" onclick="selectPlan('agency')">اختر هذه الخطة</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="plan-name">المؤسسات</h3>
+                    <div class="plan-price">$299</div>
+                    <div class="plan-period">شهرياً</div>
+                    <ul class="plan-features">
+                        <li>حسابات غير محدودة</li>
+                        <li>منشورات غير محدودة</li>
+                        <li>تحليلات مخصصة</li>
+                        <li>دعم مخصص 24/7</li>
+                        <li>تكامل API كامل</li>
+                        <li>أمان متقدم</li>
+                        <li>مدير حساب مخصص</li>
+                        <li>تخصيص كامل</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" onclick="selectPlan('enterprise')">تواصل معنا</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">💬 آراء العملاء</div>
+                <h2 class="section-title">ماذا يقول عملاؤنا</h2>
+                <p class="section-description">
+                    تجارب حقيقية من عملائنا الذين حققوا نجاحاً باهراً معنا
+                </p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "FlowAI غيرت طريقة إدارتي لمطعمي بالكامل. زاد عدد العملاء بنسبة 300% في 6 أشهر فقط. المحتوى الذي ينشئه الذكاء الاصطناعي احترافي جداً ويجذب العملاء بشكل مذهل."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">أ</div>
+                        <div class="author-info">
+                            <h4>أحمد محمد</h4>
+                            <p>صاحب مطعم الأصالة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "كطبيبة، كان من الصعب إدارة حساباتي على وسائل التواصل. FlowAI وفرت علي ساعات يومياً وزادت عدد المرضى الجدد بشكل كبير. التحليلات مفيدة جداً لفهم احتياجات المرضى."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">د</div>
+                        <div class="author-info">
+                            <h4>د. فاطمة العلي</h4>
+                            <p>طبيبة أسنان</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">
+                        "استخدم FlowAI لإدارة 15 حساب لعملائي. الجدولة الذكية والتحليلات المتقدمة ساعدتني في تحقيق نتائج ممتازة لجميع العملاء. أنصح بها بشدة لجميع المسوقين."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">م</div>
+                        <div class="author-info">
+                            <h4>محمد الخالدي</h4>
+                            <p>مدير تسويق رقمي</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#features">المميزات</a>
+                <a href="#categories">الفئات</a>
+                <a href="#pricing">الأسعار</a>
+                <a href="#testimonials">آراء العملاء</a>
+                <a href="#contact">تواصل معنا</a>
+                <a href="#">سياسة الخصوصية</a>
+                <a href="#">شروط الاستخدام</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FlowAI. جميع الحقوق محفوظة. | تم التطوير بواسطة فريق FlowAI</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>تسجيل الدخول</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">كلمة المرور:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">تسجيل الدخول</button>
+            </form>
+            <div class="register-link">
+                <p>ليس لديك حساب؟ <a href="#" onclick="showRegisterForm()">إنشاء حساب جديد</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Preview (Hidden by default) -->
+    <div id="dashboardPreview" class="dashboard-preview">
+        <div class="dashboard-header">
+            <h2>مرحباً بك في لوحة التحكم</h2>
+            <button class="btn btn-secondary" onclick="logout()">تسجيل الخروج</button>
+        </div>
+        
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <h3>156</h3>
+                <p>منشور هذا الشهر</p>
+            </div>
+            <div class="dashboard-stat">
+                <h3>12.5K</h3>
+                <p>إجمالي المتابعين</p>
+            </div>
+            <div class="dashboard-stat">
+                <h3>89%</h3>
+                <p>معدل التفاعل</p>
+            </div>
+            <div class="dashboard-stat">
+                <h3>5</h3>
+                <p>حسابات متصلة</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <p style="color: #ccc;">هذه معاينة سريعة للوحة التحكم. الوظائف الكاملة متاحة في النسخة المكتملة من المنصة.</p>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Login Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Demo login (demo@flowai.com / demo123)
+            if (email === 'demo@flowai.com' && password === 'demo123') {
+                closeLoginModal();
+                // Redirect to dashboard instead of showing preview
+                window.location.href = '/dashboard.html';
+            } else {
+                alert('بيانات الدخول غير صحيحة. جرب: demo@flowai.com / demo123');
+            }
+        });
+
+        function showDashboard() {
+            // Hide hero section and show dashboard preview
+            document.querySelector('.hero').style.display = 'none';
+            document.getElementById('dashboardPreview').style.display = 'block';
+            
+            // Update header buttons
+            const ctaButtons = document.querySelector('.cta-buttons');
+            ctaButtons.innerHTML = `
+                <span style="color: #00ff00;">مرحباً، demo@flowai.com</span>
+                <button class="btn btn-secondary" onclick="logout()">تسجيل الخروج</button>
+            `;
+        }
+
+        function logout() {
+            // Show hero section and hide dashboard
+            document.querySelector('.hero').style.display = 'flex';
+            document.getElementById('dashboardPreview').style.display = 'none';
+            
+            // Reset header buttons
+            const ctaButtons = document.querySelector('.cta-buttons');
+            ctaButtons.innerHTML = `
+                <a href="#" class="btn btn-secondary" onclick="openLoginModal()">تسجيل الدخول</a>
+                <a href="#" class="btn btn-primary">ابدأ مجاناً</a>
+            `;
+            
+            alert('تم تسجيل الخروج بنجاح');
+        }
+
+        function showRegisterForm() {
+            alert('صفحة التسجيل ستكون متاحة في النسخة المكتملة من المنصة');
+        }
+
+        // New functions for plan selection and free trial
+        function startFreeTrial() {
+            // Redirect to connect platforms page to start the onboarding flow
+            window.location.href = '/connect-platforms.html';
+        }
+
+        function selectPlan(planType) {
+            // Store selected plan
+            localStorage.setItem('selectedPlan', planType);
+            
+            // Show plan selection modal
+            showPlanModal(planType);
+        }
+
+        function showPlanModal(planType) {
+            const planNames = {
+                'free': 'المجانية',
+                'basic': 'الأساسية',
+                'professional': 'الاحترافية',
+                'agency': 'الوكالات',
+                'enterprise': 'المؤسسات'
+            };
+
+            const planName = planNames[planType] || planType;
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(5px);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+                    border: 1px solid #00ff00;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                ">
+                    <h2 style="color: #00ff00; margin-bottom: 1rem;">اختيار الخطة ${planName}</h2>
+                    <p style="color: #ccc; margin-bottom: 2rem;">
+                        ممتاز! لقد اخترت الخطة ${planName}. سنقوم الآن بتوجيهك لإكمال عملية التسجيل.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="proceedWithPlan('${planType}')" style="
+                            background: linear-gradient(45deg, #00ff00, #00cc00);
+                            color: black;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 25px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        ">متابعة</button>
+                        <button onclick="this.closest('div').parentElement.remove()" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            color: #ccc;
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            padding: 1rem 2rem;
+                            border-radius: 25px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        ">إلغاء</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function proceedWithPlan(planType) {
+            // Remove modal
+            document.querySelector('[style*="backdrop-filter"]').remove();
+            
+            // Redirect to connect platforms page
+            window.location.href = '/connect-platforms.html';
+        }
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all cards
+            document.querySelectorAll('.category-card, .feature-card, .pricing-card, .testimonial-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+        });
+
+        // Add floating animation to hero elements
+        setInterval(() => {
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
+                heroContent.style.transform = 'translateY(' + Math.sin(Date.now() * 0.001) * 5 + 'px)';
+            }
+        }, 50);
+    </script>
+</body>
+</html>
+

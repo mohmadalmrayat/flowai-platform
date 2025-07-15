@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنشورات - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 2rem 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1::before {
+            content: "🤖";
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border-right-color: #00ff00;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.2);
+        }
+
+        .post-status {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-published {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .status-scheduled {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+            border: 1px solid #ffa500;
+        }
+
+        .status-draft {
+            background: rgba(128, 128, 128, 0.2);
+            color: #ccc;
+            border: 1px solid #ccc;
+        }
+
+        .post-platforms {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-badge {
+            padding: 0.25rem 0.5rem;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #00ff00;
+        }
+
+        .post-content {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .post-content h3 {
+            color: #00ff00;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .post-text {
+            color: #ccc;
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .post-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .action-btn.edit {
+            background: rgba(0, 123, 255, 0.2);
+            color: #007bff;
+        }
+
+        .action-btn.delete {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ccc;
+        }
+
+        .empty-state h3 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 2rem;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .header-actions {
+                justify-content: center;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h1>FlowAI</h1>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    لوحة التحكم
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="create-content.html" class="nav-link">
+                    <span class="nav-icon">✍️</span>
+                    إنشاء محتوى
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="manage-posts.html" class="nav-link active">
+                    <span class="nav-icon">📝</span>
+                    إدارة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="schedule-setup.html" class="nav-link">
+                    <span class="nav-icon">📅</span>
+                    جدولة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="analytics.html" class="nav-link">
+                    <span class="nav-icon">📈</span>
+                    التحليلات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="connect-platforms.html" class="nav-link">
+                    <span class="nav-icon">🔗</span>
+                    المنصات المربوطة
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    الإعدادات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    تسجيل الخروج
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">
+                📝 إدارة المنشورات
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportPosts()">
+                    📊 تصدير التقرير
+                </button>
+                <a href="create-content.html" class="btn btn-primary">
+                    ✍️ إنشاء منشور جديد
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">إجمالي المنشورات</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">منشورات مجدولة</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">منشورات منشورة</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">مسودات</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">حالة المنشور</label>
+                    <select class="filter-select" id="statusFilter" onchange="filterPosts()">
+                        <option value="all">جميع الحالات</option>
+                        <option value="published">منشور</option>
+                        <option value="scheduled">مجدول</option>
+                        <option value="draft">مسودة</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">المنصة</label>
+                    <select class="filter-select" id="platformFilter" onchange="filterPosts()">
+                        <option value="all">جميع المنصات</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">من تاريخ</label>
+                    <input type="date" class="filter-input" id="dateFromFilter" onchange="filterPosts()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">إلى تاريخ</label>
+                    <input type="date" class="filter-input" id="dateToFilter" onchange="filterPosts()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">البحث</label>
+                    <input type="text" class="filter-input" id="searchFilter" placeholder="ابحث في المحتوى..." oninput="filterPosts()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Posts Grid -->
+        <div class="posts-grid" id="postsGrid">
+            <!-- Sample Posts -->
+            <div class="post-card" data-status="published" data-platform="facebook,instagram" data-date="2024-01-15">
+                <div class="post-status status-published">منشور</div>
+                <div class="post-platforms">
+                    <span class="platform-badge">📘 Facebook</span>
+                    <span class="platform-badge">📷 Instagram</span>
+                </div>
+                <div class="post-content">
+                    <h3>عرض خاص على منتجاتنا الجديدة</h3>
+                    <p class="post-text">🎉 احصل على خصم 30% على جميع منتجاتنا الجديدة لفترة محدودة! جودة عالية وأسعار لا تقاوم. لا تفوت هذه الفرصة الذهبية...</p>
+                </div>
+                <div class="post-meta">
+                    <div class="post-date">
+                        <span>📅</span>
+                        <span>15 يناير 2024 - 9:00 ص</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <span>👍</span>
+                            <span>245</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>32</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📤</span>
+                            <span>18</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn" onclick="viewPost(1)" title="عرض">👁️</button>
+                    <button class="action-btn edit" onclick="editPost(1)" title="تعديل">✏️</button>
+                    <button class="action-btn" onclick="duplicatePost(1)" title="نسخ">📋</button>
+                    <button class="action-btn delete" onclick="deletePost(1)" title="حذف">🗑️</button>
+                </div>
+            </div>
+
+            <div class="post-card" data-status="scheduled" data-platform="twitter,linkedin" data-date="2024-01-20">
+                <div class="post-status status-scheduled">مجدول</div>
+                <div class="post-platforms">
+                    <span class="platform-badge">🐦 Twitter</span>
+                    <span class="platform-badge">💼 LinkedIn</span>
+                </div>
+                <div class="post-content">
+                    <h3>نصائح لتحسين الإنتاجية</h3>
+                    <p class="post-text">💡 كيف تحسن من إنتاجيتك في العمل؟ إليك 5 نصائح مجربة ومضمونة لزيادة كفاءتك وتحقيق أهدافك بشكل أسرع...</p>
+                </div>
+                <div class="post-meta">
+                    <div class="post-date">
+                        <span>⏰</span>
+                        <span>20 يناير 2024 - 2:00 م</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <span>📊</span>
+                            <span>مجدول</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn" onclick="viewPost(2)" title="عرض">👁️</button>
+                    <button class="action-btn edit" onclick="editPost(2)" title="تعديل">✏️</button>
+                    <button class="action-btn" onclick="publishNow(2)" title="نشر الآن">🚀</button>
+                    <button class="action-btn delete" onclick="deletePost(2)" title="حذف">🗑️</button>
+                </div>
+            </div>
+
+            <div class="post-card" data-status="draft" data-platform="instagram" data-date="2024-01-18">
+                <div class="post-status status-draft">مسودة</div>
+                <div class="post-platforms">
+                    <span class="platform-badge">📷 Instagram</span>
+                </div>
+                <div class="post-content">
+                    <h3>خلف الكواليس - يوم في المكتب</h3>
+                    <p class="post-text">🎬 شاهد كيف يبدو يوم عادي في مكتبنا. فريق متحمس، أفكار إبداعية، وجو من التعاون والإنجاز...</p>
+                </div>
+                <div class="post-meta">
+                    <div class="post-date">
+                        <span>📝</span>
+                        <span>18 يناير 2024 - مسودة</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <span>💾</span>
+                            <span>محفوظ</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn" onclick="viewPost(3)" title="عرض">👁️</button>
+                    <button class="action-btn edit" onclick="editPost(3)" title="تعديل">✏️</button>
+                    <button class="action-btn" onclick="schedulePost(3)" title="جدولة">📅</button>
+                    <button class="action-btn delete" onclick="deletePost(3)" title="حذف">🗑️</button>
+                </div>
+            </div>
+
+            <div class="post-card" data-status="published" data-platform="facebook,twitter" data-date="2024-01-12">
+                <div class="post-status status-published">منشور</div>
+                <div class="post-platforms">
+                    <span class="platform-badge">📘 Facebook</span>
+                    <span class="platform-badge">🐦 Twitter</span>
+                </div>
+                <div class="post-content">
+                    <h3>شكراً لعملائنا الكرام</h3>
+                    <p class="post-text">❤️ نتقدم بأسمى آيات الشكر والتقدير لجميع عملائنا الكرام على ثقتهم المستمرة. أنتم سر نجاحنا وتميزنا...</p>
+                </div>
+                <div class="post-meta">
+                    <div class="post-date">
+                        <span>📅</span>
+                        <span>12 يناير 2024 - 6:00 م</span>
+                    </div>
+                    <div class="post-stats">
+                        <div class="stat-item">
+                            <span>👍</span>
+                            <span>189</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>45</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📤</span>
+                            <span>23</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn" onclick="viewPost(4)" title="عرض">👁️</button>
+                    <button class="action-btn edit" onclick="editPost(4)" title="تعديل">✏️</button>
+                    <button class="action-btn" onclick="duplicatePost(4)" title="نسخ">📋</button>
+                    <button class="action-btn delete" onclick="deletePost(4)" title="حذف">🗑️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default date filters
+        const today = new Date();
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        
+        document.getElementById('dateFromFilter').value = lastMonth.toISOString().split('T')[0];
+        document.getElementById('dateToFilter').value = today.toISOString().split('T')[0];
+
+        function filterPosts() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const platformFilter = document.getElementById('platformFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+            const posts = document.querySelectorAll('.post-card');
+            
+            posts.forEach(post => {
+                let show = true;
+
+                // Status filter
+                if (statusFilter !== 'all' && !post.dataset.status.includes(statusFilter)) {
+                    show = false;
+                }
+
+                // Platform filter
+                if (platformFilter !== 'all' && !post.dataset.platform.includes(platformFilter)) {
+                    show = false;
+                }
+
+                // Date filter
+                const postDate = post.dataset.date;
+                if (dateFromFilter && postDate < dateFromFilter) {
+                    show = false;
+                }
+                if (dateToFilter && postDate > dateToFilter) {
+                    show = false;
+                }
+
+                // Search filter
+                if (searchFilter && !post.textContent.toLowerCase().includes(searchFilter)) {
+                    show = false;
+                }
+
+                post.style.display = show ? 'block' : 'none';
+            });
+
+            // Show empty state if no posts visible
+            const visiblePosts = document.querySelectorAll('.post-card[style="display: block"], .post-card:not([style*="display: none"])');
+            const postsGrid = document.getElementById('postsGrid');
+            
+            if (visiblePosts.length === 0) {
+                if (!document.querySelector('.empty-state')) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <h3>🔍 لا توجد منشورات</h3>
+                        <p>لم يتم العثور على منشورات تطابق معايير البحث المحددة</p>
+                        <a href="create-content.html" class="btn btn-primary">إنشاء منشور جديد</a>
+                    `;
+                    postsGrid.appendChild(emptyState);
+                }
+            } else {
+                const emptyState = document.querySelector('.empty-state');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+            }
+        }
+
+        function viewPost(id) {
+            alert(`عرض تفاصيل المنشور رقم ${id}`);
+        }
+
+        function editPost(id) {
+            alert(`تعديل المنشور رقم ${id}`);
+            // Redirect to edit page
+            window.location.href = `create-content.html?edit=${id}`;
+        }
+
+        function duplicatePost(id) {
+            if (confirm('هل تريد نسخ هذا المنشور؟')) {
+                alert(`تم نسخ المنشور رقم ${id} بنجاح`);
+                // Reload page to show duplicated post
+                location.reload();
+            }
+        }
+
+        function deletePost(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                alert(`تم حذف المنشور رقم ${id} بنجاح`);
+                // Remove post from DOM
+                event.target.closest('.post-card').remove();
+            }
+        }
+
+        function publishNow(id) {
+            if (confirm('هل تريد نشر هذا المنشور الآن؟')) {
+                alert(`تم نشر المنشور رقم ${id} بنجاح`);
+                // Update post status
+                const postCard = event.target.closest('.post-card');
+                const statusBadge = postCard.querySelector('.post-status');
+                statusBadge.textContent = 'منشور';
+                statusBadge.className = 'post-status status-published';
+                postCard.dataset.status = 'published';
+            }
+        }
+
+        function schedulePost(id) {
+            const date = prompt('أدخل تاريخ النشر (YYYY-MM-DD):');
+            const time = prompt('أدخل وقت النشر (HH:MM):');
+            
+            if (date && time) {
+                alert(`تم جدولة المنشور رقم ${id} لتاريخ ${date} في الساعة ${time}`);
+                // Update post status
+                const postCard = event.target.closest('.post-card');
+                const statusBadge = postCard.querySelector('.post-status');
+                statusBadge.textContent = 'مجدول';
+                statusBadge.className = 'post-status status-scheduled';
+                postCard.dataset.status = 'scheduled';
+            }
+        }
+
+        function exportPosts() {
+            alert('🎉 تم تصدير تقرير المنشورات بنجاح! سيتم تحميل الملف قريباً.');
+        }
+    </script>
+</body>
+</html>
+

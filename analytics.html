@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحليلات - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 2rem 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1::before {
+            content: "🤖";
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border-right-color: #00ff00;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .analytics-filters {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: #00ff00;
+        }
+
+        .stat-change.negative {
+            color: #ff4444;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            color: #00ff00;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .chart-period {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-icon {
+            font-size: 2rem;
+        }
+
+        .platform-name {
+            color: #00ff00;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .platform-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .platform-stat {
+            text-align: center;
+        }
+
+        .platform-stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .platform-stat-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .top-posts {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .top-posts h3 {
+            color: #00ff00;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .post-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .post-rank {
+            background: #00ff00;
+            color: black;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .post-content {
+            flex: 1;
+        }
+
+        .post-title {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .post-platform {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .post-engagement {
+            text-align: right;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .insights-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .insights-header {
+            color: #00ff00;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .insight-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-desc {
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .header-actions {
+                justify-content: center;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h1>FlowAI</h1>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    لوحة التحكم
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="create-content.html" class="nav-link">
+                    <span class="nav-icon">✍️</span>
+                    إنشاء محتوى
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="manage-posts.html" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    إدارة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="schedule-setup.html" class="nav-link">
+                    <span class="nav-icon">📅</span>
+                    جدولة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="analytics.html" class="nav-link active">
+                    <span class="nav-icon">📈</span>
+                    التحليلات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="connect-platforms.html" class="nav-link">
+                    <span class="nav-icon">🔗</span>
+                    المنصات المربوطة
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    الإعدادات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    تسجيل الخروج
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">
+                📈 التحليلات والإحصائيات
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportReport()">
+                    📊 تصدير التقرير
+                </button>
+                <button class="btn btn-primary" onclick="refreshAnalytics()">
+                    🔄 تحديث البيانات
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="analytics-filters">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">الفترة الزمنية</label>
+                    <select class="filter-select" id="periodFilter" onchange="updateAnalytics()">
+                        <option value="7">آخر 7 أيام</option>
+                        <option value="30" selected>آخر 30 يوم</option>
+                        <option value="90">آخر 3 أشهر</option>
+                        <option value="365">آخر سنة</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">المنصة</label>
+                    <select class="filter-select" id="platformFilter" onchange="updateAnalytics()">
+                        <option value="all">جميع المنصات</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">نوع المحتوى</label>
+                    <select class="filter-select" id="contentFilter" onchange="updateAnalytics()">
+                        <option value="all">جميع الأنواع</option>
+                        <option value="image">صور</option>
+                        <option value="video">فيديو</option>
+                        <option value="text">نص</option>
+                        <option value="link">روابط</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">من تاريخ</label>
+                    <input type="date" class="filter-input" id="dateFromFilter" onchange="updateAnalytics()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">إلى تاريخ</label>
+                    <input type="date" class="filter-input" id="dateToFilter" onchange="updateAnalytics()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-number">45.2K</div>
+                <div class="stat-label">إجمالي المشاهدات</div>
+                <div class="stat-change positive">
+                    <span>↗️</span>
+                    <span>+15.3% من الفترة السابقة</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-number">3.8K</div>
+                <div class="stat-label">إجمالي التفاعلات</div>
+                <div class="stat-change positive">
+                    <span>↗️</span>
+                    <span>+12.7% من الفترة السابقة</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📤</div>
+                <div class="stat-number">892</div>
+                <div class="stat-label">إجمالي المشاركات</div>
+                <div class="stat-change positive">
+                    <span>↗️</span>
+                    <span>+8.4% من الفترة السابقة</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">234</div>
+                <div class="stat-label">متابعين جدد</div>
+                <div class="stat-change positive">
+                    <span>↗️</span>
+                    <span>+22.1% من الفترة السابقة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">📊 تطور الأداء</h3>
+                    <span class="chart-period">آخر 30 يوم</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">🥧 توزيع المنصات</h3>
+                    <span class="chart-period">هذا الشهر</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="platformsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platforms Performance -->
+        <div class="platforms-grid">
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon">📘</div>
+                    <div class="platform-name">Facebook</div>
+                </div>
+                <div class="platform-stats">
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">18.5K</div>
+                        <div class="platform-stat-label">مشاهدات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">1.2K</div>
+                        <div class="platform-stat-label">تفاعلات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">6.5%</div>
+                        <div class="platform-stat-label">معدل التفاعل</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">89</div>
+                        <div class="platform-stat-label">متابعين جدد</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon">📷</div>
+                    <div class="platform-name">Instagram</div>
+                </div>
+                <div class="platform-stats">
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">12.3K</div>
+                        <div class="platform-stat-label">مشاهدات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">1.8K</div>
+                        <div class="platform-stat-label">تفاعلات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">14.6%</div>
+                        <div class="platform-stat-label">معدل التفاعل</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">156</div>
+                        <div class="platform-stat-label">متابعين جدد</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon">🐦</div>
+                    <div class="platform-name">Twitter</div>
+                </div>
+                <div class="platform-stats">
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">8.7K</div>
+                        <div class="platform-stat-label">مشاهدات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">456</div>
+                        <div class="platform-stat-label">تفاعلات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">5.2%</div>
+                        <div class="platform-stat-label">معدل التفاعل</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">67</div>
+                        <div class="platform-stat-label">متابعين جدد</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon">💼</div>
+                    <div class="platform-name">LinkedIn</div>
+                </div>
+                <div class="platform-stats">
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">5.9K</div>
+                        <div class="platform-stat-label">مشاهدات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">234</div>
+                        <div class="platform-stat-label">تفاعلات</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">4.0%</div>
+                        <div class="platform-stat-label">معدل التفاعل</div>
+                    </div>
+                    <div class="platform-stat">
+                        <div class="platform-stat-number">45</div>
+                        <div class="platform-stat-label">متابعين جدد</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Posts -->
+        <div class="top-posts">
+            <h3>🏆 أفضل المنشورات أداءً</h3>
+            <div class="post-list">
+                <div class="post-item">
+                    <div class="post-rank">1</div>
+                    <div class="post-content">
+                        <div class="post-title">عرض خاص على منتجاتنا الجديدة</div>
+                        <div class="post-platform">📘 Facebook • 📷 Instagram</div>
+                    </div>
+                    <div class="post-engagement">2.3K تفاعل</div>
+                </div>
+                <div class="post-item">
+                    <div class="post-rank">2</div>
+                    <div class="post-content">
+                        <div class="post-title">نصائح لتحسين الإنتاجية في العمل</div>
+                        <div class="post-platform">💼 LinkedIn • 🐦 Twitter</div>
+                    </div>
+                    <div class="post-engagement">1.8K تفاعل</div>
+                </div>
+                <div class="post-item">
+                    <div class="post-rank">3</div>
+                    <div class="post-content">
+                        <div class="post-title">خلف الكواليس - يوم في المكتب</div>
+                        <div class="post-platform">📷 Instagram</div>
+                    </div>
+                    <div class="post-engagement">1.5K تفاعل</div>
+                </div>
+                <div class="post-item">
+                    <div class="post-rank">4</div>
+                    <div class="post-content">
+                        <div class="post-title">شكراً لعملائنا الكرام</div>
+                        <div class="post-platform">📘 Facebook</div>
+                    </div>
+                    <div class="post-engagement">1.2K تفاعل</div>
+                </div>
+                <div class="post-item">
+                    <div class="post-rank">5</div>
+                    <div class="post-content">
+                        <div class="post-title">إطلاق خدمة جديدة قريباً</div>
+                        <div class="post-platform">🐦 Twitter • 💼 LinkedIn</div>
+                    </div>
+                    <div class="post-engagement">987 تفاعل</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="insights-section">
+            <h3 class="insights-header">🤖 رؤى ذكية من FlowAI</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-title">📈 أفضل وقت للنشر</div>
+                    <div class="insight-desc">بناءً على تحليل بياناتك، أفضل أوقات النشر هي الثلاثاء والخميس من الساعة 9-11 صباحاً و 6-8 مساءً. هذه الأوقات تحقق أعلى معدلات تفاعل.</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">🎯 نوع المحتوى الأكثر تفاعلاً</div>
+                    <div class="insight-desc">المنشورات التي تحتوي على صور تحقق تفاعلاً أكبر بنسبة 65% من المنشورات النصية. ننصح بزيادة استخدام المحتوى المرئي.</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">📱 أداء المنصات</div>
+                    <div class="insight-desc">Instagram يحقق أعلى معدل تفاعل (14.6%) بينما Facebook يحقق أكبر عدد مشاهدات. ننصح بالتركيز على Instagram للتفاعل و Facebook للوصول.</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">🔥 الهاشتاغات الأكثر فعالية</div>
+                    <div class="insight-desc">الهاشتاغات #مطعم #طعام_صحي #الرياض حققت أفضل النتائج. استخدم 3-5 هاشتاغات ذات صلة لزيادة الوصول.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default date filters
+        const today = new Date();
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        
+        document.getElementById('dateFromFilter').value = lastMonth.toISOString().split('T')[0];
+        document.getElementById('dateToFilter').value = today.toISOString().split('T')[0];
+
+        // Performance Chart
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        const performanceChart = new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['1 يناير', '5 يناير', '10 يناير', '15 يناير', '20 يناير', '25 يناير', '30 يناير'],
+                datasets: [{
+                    label: 'المشاهدات',
+                    data: [1200, 1900, 3000, 2500, 3200, 3800, 4500],
+                    borderColor: '#00ff00',
+                    backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'التفاعلات',
+                    data: [200, 300, 450, 380, 520, 680, 890],
+                    borderColor: '#0099ff',
+                    backgroundColor: 'rgba(0, 153, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'white'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Platforms Chart
+        const platformsCtx = document.getElementById('platformsChart').getContext('2d');
+        const platformsChart = new Chart(platformsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Facebook', 'Instagram', 'Twitter', 'LinkedIn'],
+                datasets: [{
+                    data: [35, 30, 20, 15],
+                    backgroundColor: [
+                        '#1877f2',
+                        '#e4405f',
+                        '#1da1f2',
+                        '#0077b5'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#000'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'white',
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateAnalytics() {
+            const period = document.getElementById('periodFilter').value;
+            const platform = document.getElementById('platformFilter').value;
+            const content = document.getElementById('contentFilter').value;
+            
+            console.log('Updating analytics with filters:', { period, platform, content });
+            
+            // Simulate data update
+            setTimeout(() => {
+                alert('✅ تم تحديث البيانات بنجاح!');
+            }, 500);
+        }
+
+        function refreshAnalytics() {
+            alert('🔄 جاري تحديث البيانات من جميع المنصات...');
+            
+            // Simulate refresh
+            setTimeout(() => {
+                alert('✅ تم تحديث جميع البيانات بنجاح!');
+                location.reload();
+            }, 2000);
+        }
+
+        function exportReport() {
+            alert('📊 جاري إنشاء التقرير... سيتم تحميل ملف PDF قريباً.');
+        }
+    </script>
+</body>
+</html>
+

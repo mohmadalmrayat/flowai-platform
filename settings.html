@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 2rem 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1::before {
+            content: "🤖";
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border-right-color: #00ff00;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        .settings-nav {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            height: fit-content;
+        }
+
+        .settings-nav h3 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .settings-nav-list {
+            list-style: none;
+        }
+
+        .settings-nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #ccc;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-nav-link:hover,
+        .settings-nav-link.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+        }
+
+        .settings-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: #00ff00;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #00ff00;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-info {
+            flex: 1;
+        }
+
+        .notification-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            color: #00ff00;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .plan-price {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .plan-features li {
+            padding: 0.25rem 0;
+            color: #ccc;
+        }
+
+        .plan-features li::before {
+            content: "✅";
+            margin-left: 0.5rem;
+        }
+
+        .current-plan {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .danger-zone {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .danger-zone h3 {
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .settings-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .settings-nav {
+                order: 2;
+            }
+            
+            .settings-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h1>FlowAI</h1>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    لوحة التحكم
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="create-content.html" class="nav-link">
+                    <span class="nav-icon">✍️</span>
+                    إنشاء محتوى
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="manage-posts.html" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    إدارة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="schedule-setup.html" class="nav-link">
+                    <span class="nav-icon">📅</span>
+                    جدولة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="analytics.html" class="nav-link">
+                    <span class="nav-icon">📈</span>
+                    التحليلات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="connect-platforms.html" class="nav-link">
+                    <span class="nav-icon">🔗</span>
+                    المنصات المربوطة
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link active">
+                    <span class="nav-icon">⚙️</span>
+                    الإعدادات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    تسجيل الخروج
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">
+                ⚙️ الإعدادات
+            </h1>
+        </div>
+
+        <div class="settings-container">
+            <!-- Settings Navigation -->
+            <div class="settings-nav">
+                <h3>أقسام الإعدادات</h3>
+                <ul class="settings-nav-list">
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link active" onclick="showSection('profile')">
+                            <span>👤</span>
+                            الملف الشخصي
+                        </a>
+                    </li>
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link" onclick="showSection('account')">
+                            <span>🔐</span>
+                            الحساب والأمان
+                        </a>
+                    </li>
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link" onclick="showSection('notifications')">
+                            <span>🔔</span>
+                            الإشعارات
+                        </a>
+                    </li>
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link" onclick="showSection('preferences')">
+                            <span>🎨</span>
+                            التفضيلات
+                        </a>
+                    </li>
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link" onclick="showSection('billing')">
+                            <span>💳</span>
+                            الفواتير والاشتراك
+                        </a>
+                    </li>
+                    <li class="settings-nav-item">
+                        <a href="#" class="settings-nav-link" onclick="showSection('integrations')">
+                            <span>🔗</span>
+                            التكاملات
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Profile Section -->
+                <div id="profile" class="settings-section active">
+                    <h2 class="section-title">👤 الملف الشخصي</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">الصورة الشخصية</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(45deg, #00ff00, #00cc00); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: black;">أ</div>
+                            <button class="btn btn-secondary">تغيير الصورة</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">الاسم الأول</label>
+                            <input type="text" class="form-input" value="أحمد" placeholder="الاسم الأول">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">الاسم الأخير</label>
+                            <input type="text" class="form-input" value="محمد" placeholder="الاسم الأخير">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-input" value="ahmed@example.com" placeholder="البريد الإلكتروني">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">رقم الهاتف</label>
+                        <input type="tel" class="form-input" value="+966501234567" placeholder="رقم الهاتف">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">اسم الشركة/العمل</label>
+                        <input type="text" class="form-input" value="مطعم الذوق الأصيل" placeholder="اسم الشركة">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">نبذة تعريفية</label>
+                        <textarea class="form-textarea" placeholder="اكتب نبذة مختصرة عنك أو عن عملك...">مطعم متخصص في تقديم أشهى الأطباق العربية الأصيلة بجودة عالية وخدمة مميزة.</textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveProfile()">💾 حفظ التغييرات</button>
+                        <button class="btn btn-secondary" onclick="resetProfile()">🔄 إعادة تعيين</button>
+                    </div>
+                </div>
+
+                <!-- Account & Security Section -->
+                <div id="account" class="settings-section">
+                    <h2 class="section-title">🔐 الحساب والأمان</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">كلمة المرور الحالية</label>
+                        <input type="password" class="form-input" placeholder="كلمة المرور الحالية">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">كلمة المرور الجديدة</label>
+                            <input type="password" class="form-input" placeholder="كلمة المرور الجديدة">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">تأكيد كلمة المرور</label>
+                            <input type="password" class="form-input" placeholder="تأكيد كلمة المرور">
+                        </div>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">المصادقة الثنائية</div>
+                            <div class="notification-desc">حماية إضافية لحسابك باستخدام رمز التحقق</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">تسجيل الدخول من أجهزة جديدة</div>
+                            <div class="notification-desc">إرسال تنبيه عند تسجيل الدخول من جهاز جديد</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="updatePassword()">🔒 تحديث كلمة المرور</button>
+                        <button class="btn btn-secondary" onclick="downloadData()">📥 تحميل بياناتي</button>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div id="notifications" class="settings-section">
+                    <h2 class="section-title">🔔 الإشعارات</h2>
+                    
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">إشعارات البريد الإلكتروني</div>
+                            <div class="notification-desc">تلقي إشعارات مهمة عبر البريد الإلكتروني</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">إشعارات المنشورات</div>
+                            <div class="notification-desc">تنبيهات عند نشر المحتوى أو فشل النشر</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">تقارير الأداء</div>
+                            <div class="notification-desc">تقارير أسبوعية عن أداء المحتوى</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">اقتراحات المحتوى</div>
+                            <div class="notification-desc">اقتراحات ذكية لتحسين المحتوى</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">العروض والتحديثات</div>
+                            <div class="notification-desc">معلومات عن الميزات الجديدة والعروض</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveNotifications()">💾 حفظ الإعدادات</button>
+                    </div>
+                </div>
+
+                <!-- Preferences Section -->
+                <div id="preferences" class="settings-section">
+                    <h2 class="section-title">🎨 التفضيلات</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">اللغة</label>
+                        <select class="form-select">
+                            <option value="ar" selected>العربية</option>
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">المنطقة الزمنية</label>
+                        <select class="form-select">
+                            <option value="Asia/Riyadh" selected>الرياض (GMT+3)</option>
+                            <option value="Asia/Dubai">دبي (GMT+4)</option>
+                            <option value="Africa/Cairo">القاهرة (GMT+2)</option>
+                        </select>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">الوضع الليلي</div>
+                            <div class="notification-desc">تفعيل الوضع الليلي للواجهة</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">الحفظ التلقائي</div>
+                            <div class="notification-desc">حفظ المسودات تلقائياً أثناء الكتابة</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">عدد المنشورات في الصفحة</label>
+                        <select class="form-select">
+                            <option value="10">10 منشورات</option>
+                            <option value="20" selected>20 منشور</option>
+                            <option value="50">50 منشور</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="savePreferences()">💾 حفظ التفضيلات</button>
+                    </div>
+                </div>
+
+                <!-- Billing Section -->
+                <div id="billing" class="settings-section">
+                    <h2 class="section-title">💳 الفواتير والاشتراك</h2>
+                    
+                    <div class="plan-card current-plan">
+                        <div class="plan-header">
+                            <div class="plan-name">الخطة الأساسية</div>
+                            <div class="plan-price">99 ر.س/شهر</div>
+                        </div>
+                        <ul class="plan-features">
+                            <li>5 منصات اجتماعية</li>
+                            <li>100 منشور شهرياً</li>
+                            <li>تحليلات أساسية</li>
+                            <li>دعم فني</li>
+                        </ul>
+                        <div style="color: #00ff00; font-weight: bold;">✅ الخطة الحالية</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">طريقة الدفع</label>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                            <span>💳</span>
+                            <div>
+                                <div style="font-weight: bold;">Visa •••• 1234</div>
+                                <div style="color: #ccc; font-size: 0.9rem;">تنتهي في 12/2025</div>
+                            </div>
+                            <button class="btn btn-secondary" style="margin-right: auto;">تعديل</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">الفاتورة التالية</label>
+                        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>تاريخ الفاتورة:</span>
+                                <span>15 فبراير 2024</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; color: #00ff00;">
+                                <span>المبلغ:</span>
+                                <span>99 ر.س</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="upgradePlan()">⬆️ ترقية الخطة</button>
+                        <button class="btn btn-secondary" onclick="viewInvoices()">📄 عرض الفواتير</button>
+                        <button class="btn btn-danger" onclick="cancelSubscription()">❌ إلغاء الاشتراك</button>
+                    </div>
+                </div>
+
+                <!-- Integrations Section -->
+                <div id="integrations" class="settings-section">
+                    <h2 class="section-title">🔗 التكاملات</h2>
+                    
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Google Analytics</div>
+                            <div class="notification-desc">ربط حسابك مع Google Analytics لتحليلات متقدمة</div>
+                        </div>
+                        <button class="btn btn-secondary">ربط</button>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Zapier</div>
+                            <div class="notification-desc">أتمتة المهام مع أكثر من 3000 تطبيق</div>
+                        </div>
+                        <button class="btn btn-secondary">ربط</button>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Slack</div>
+                            <div class="notification-desc">تلقي إشعارات في قنوات Slack</div>
+                        </div>
+                        <button class="btn btn-primary">مربوط</button>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Canva</div>
+                            <div class="notification-desc">إنشاء تصاميم احترافية مباشرة من المنصة</div>
+                        </div>
+                        <button class="btn btn-secondary">ربط</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="exploreIntegrations()">🔍 استكشاف المزيد</button>
+                    </div>
+
+                    <div class="danger-zone">
+                        <h3>⚠️ منطقة الخطر</h3>
+                        <p style="color: #ccc; margin-bottom: 1rem;">الإجراءات التالية لا يمكن التراجع عنها. يرجى التأكد قبل المتابعة.</p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-danger" onclick="deleteAccount()">🗑️ حذف الحساب</button>
+                            <button class="btn btn-danger" onclick="resetAllData()">🔄 إعادة تعيين جميع البيانات</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.settings-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function saveProfile() {
+            alert('✅ تم حفظ الملف الشخصي بنجاح!');
+        }
+
+        function resetProfile() {
+            if (confirm('هل تريد إعادة تعيين جميع بيانات الملف الشخصي؟')) {
+                alert('🔄 تم إعادة تعيين الملف الشخصي');
+                location.reload();
+            }
+        }
+
+        function updatePassword() {
+            alert('🔒 تم تحديث كلمة المرور بنجاح!');
+        }
+
+        function downloadData() {
+            alert('📥 سيتم تحميل ملف البيانات قريباً...');
+        }
+
+        function saveNotifications() {
+            alert('✅ تم حفظ إعدادات الإشعارات بنجاح!');
+        }
+
+        function savePreferences() {
+            alert('✅ تم حفظ التفضيلات بنجاح!');
+        }
+
+        function upgradePlan() {
+            alert('⬆️ سيتم توجيهك لصفحة ترقية الخطة...');
+        }
+
+        function viewInvoices() {
+            alert('📄 عرض جميع الفواتير السابقة...');
+        }
+
+        function cancelSubscription() {
+            if (confirm('هل أنت متأكد من إلغاء الاشتراك؟ ستفقد الوصول لجميع الميزات المدفوعة.')) {
+                alert('❌ تم إلغاء الاشتراك. نأسف لرؤيتك تغادر!');
+            }
+        }
+
+        function exploreIntegrations() {
+            alert('🔍 استكشاف المزيد من التكاملات المتاحة...');
+        }
+
+        function deleteAccount() {
+            const confirmation = prompt('لحذف الحساب نهائياً، اكتب "حذف الحساب" في المربع أدناه:');
+            if (confirmation === 'حذف الحساب') {
+                alert('🗑️ تم حذف الحساب نهائياً. وداعاً!');
+                window.location.href = 'index.html';
+            } else if (confirmation !== null) {
+                alert('❌ النص المدخل غير صحيح. لم يتم حذف الحساب.');
+            }
+        }
+
+        function resetAllData() {
+            if (confirm('هل أنت متأكد من إعادة تعيين جميع البيانات؟ سيتم حذف جميع المنشورات والإعدادات.')) {
+                alert('🔄 تم إعادة تعيين جميع البيانات بنجاح!');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
+

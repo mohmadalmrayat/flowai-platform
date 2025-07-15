@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ربط المنصات - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: black;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 3rem;
+            gap: 1rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .step-circle.completed {
+            background: #00ff00;
+            color: black;
+        }
+
+        .step-circle.active {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+        }
+
+        .step-arrow {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.1);
+        }
+
+        .platform-card.connected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .platform-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .facebook { background: #1877f2; }
+        .instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .twitter { background: #1da1f2; }
+        .linkedin { background: #0077b5; }
+        .tiktok { background: #000; }
+        .youtube { background: #ff0000; }
+        .snapchat { background: #fffc00; color: black; }
+        .pinterest { background: #bd081c; }
+
+        .platform-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .platform-description {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .platform-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .connect-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .connect-btn.connect {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .connect-btn.connect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .connect-btn.connected {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .connect-btn.disconnect {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #00ff00;
+            color: black;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .skip-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skip-section p {
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        .connected-count {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .connected-count .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .connected-count .text {
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1rem;
+            }
+
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .progress-indicator {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🤖 FlowAI</div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <span id="userName">أحمد محمد</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="welcome-section">
+            <h1>مرحباً بك في FlowAI! 🎉</h1>
+            <p>اربط حساباتك على وسائل التواصل الاجتماعي لتبدأ في إدارتها بذكاء اصطناعي متطور</p>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-step">
+                <div class="step-circle completed">✓</div>
+                <span>إنشاء الحساب</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="progress-step">
+                <div class="step-circle active">2</div>
+                <span>ربط المنصات</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="progress-step">
+                <div class="step-circle">3</div>
+                <span>لوحة التحكم</span>
+            </div>
+        </div>
+
+        <div class="connected-count">
+            <div class="number" id="connectedCount">0</div>
+            <div class="text">منصة مربوطة من أصل 8</div>
+        </div>
+
+        <div class="platforms-grid">
+            <div class="platform-card" data-platform="facebook">
+                <div class="platform-icon facebook">📘</div>
+                <div class="platform-name">Facebook</div>
+                <div class="platform-description">اربط صفحات الفيسبوك وإدارة المنشورات والتفاعلات</div>
+                <div class="platform-stats">
+                    <span>2.9B مستخدم</span>
+                    <span>أعلى تفاعل</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('facebook')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="instagram">
+                <div class="platform-icon instagram">📷</div>
+                <div class="platform-name">Instagram</div>
+                <div class="platform-description">إدارة المنشورات والقصص والريلز بذكاء اصطناعي</div>
+                <div class="platform-stats">
+                    <span>2B مستخدم</span>
+                    <span>محتوى بصري</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('instagram')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="twitter">
+                <div class="platform-icon twitter">🐦</div>
+                <div class="platform-name">Twitter</div>
+                <div class="platform-description">نشر التغريدات وإدارة المحادثات في الوقت الفعلي</div>
+                <div class="platform-stats">
+                    <span>450M مستخدم</span>
+                    <span>أخبار فورية</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('twitter')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="linkedin">
+                <div class="platform-icon linkedin">💼</div>
+                <div class="platform-name">LinkedIn</div>
+                <div class="platform-description">بناء الشبكة المهنية ونشر المحتوى التجاري</div>
+                <div class="platform-stats">
+                    <span>900M مستخدم</span>
+                    <span>شبكة مهنية</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('linkedin')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="tiktok">
+                <div class="platform-icon tiktok">🎵</div>
+                <div class="platform-name">TikTok</div>
+                <div class="platform-description">إنشاء ونشر مقاطع الفيديو القصيرة الجذابة</div>
+                <div class="platform-stats">
+                    <span>1B مستخدم</span>
+                    <span>فيديو قصير</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('tiktok')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="youtube">
+                <div class="platform-icon youtube">📺</div>
+                <div class="platform-name">YouTube</div>
+                <div class="platform-description">إدارة القناة ونشر مقاطع الفيديو الطويلة</div>
+                <div class="platform-stats">
+                    <span>2.7B مستخدم</span>
+                    <span>فيديو طويل</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('youtube')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="snapchat">
+                <div class="platform-icon snapchat">👻</div>
+                <div class="platform-name">Snapchat</div>
+                <div class="platform-description">مشاركة اللحظات والقصص المؤقتة</div>
+                <div class="platform-stats">
+                    <span>750M مستخدم</span>
+                    <span>محتوى مؤقت</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('snapchat')">ربط الحساب</button>
+            </div>
+
+            <div class="platform-card" data-platform="pinterest">
+                <div class="platform-icon pinterest">📌</div>
+                <div class="platform-name">Pinterest</div>
+                <div class="platform-description">إنشاء ومشاركة الأفكار البصرية والإلهام</div>
+                <div class="platform-stats">
+                    <span>450M مستخدم</span>
+                    <span>أفكار بصرية</span>
+                </div>
+                <button class="connect-btn connect" onclick="connectPlatform('pinterest')">ربط الحساب</button>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/dashboard.html" class="btn btn-primary" id="continueBtn">متابعة إلى لوحة التحكم</a>
+            <button class="btn btn-secondary" onclick="connectAll()">ربط الكل</button>
+        </div>
+
+        <div class="skip-section">
+            <p>يمكنك ربط المنصات لاحقاً من لوحة التحكم</p>
+            <a href="/dashboard.html" class="btn btn-secondary">تخطي الآن</a>
+        </div>
+    </div>
+
+    <script>
+        let connectedPlatforms = new Set();
+
+        // Load user data
+        const userData = JSON.parse(localStorage.getItem('flowai_user') || '{}');
+        if (userData.fullName) {
+            document.getElementById('userName').textContent = userData.fullName;
+            document.getElementById('userAvatar').textContent = userData.fullName.charAt(0).toUpperCase();
+        }
+
+        function updateConnectedCount() {
+            const count = connectedPlatforms.size;
+            document.getElementById('connectedCount').textContent = count;
+            
+            // Update continue button text
+            const continueBtn = document.getElementById('continueBtn');
+            if (count > 0) {
+                continueBtn.textContent = `متابعة مع ${count} منصة مربوطة`;
+            } else {
+                continueBtn.textContent = 'متابعة إلى لوحة التحكم';
+            }
+        }
+
+        function connectPlatform(platform) {
+            const card = document.querySelector(`[data-platform="${platform}"]`);
+            const button = card.querySelector('.connect-btn');
+            
+            if (connectedPlatforms.has(platform)) {
+                // Disconnect
+                connectedPlatforms.delete(platform);
+                card.classList.remove('connected');
+                card.querySelector('.status-badge')?.remove();
+                button.textContent = 'ربط الحساب';
+                button.className = 'connect-btn connect';
+                button.onclick = () => connectPlatform(platform);
+            } else {
+                // Connect
+                button.textContent = 'جاري الربط...';
+                button.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    connectedPlatforms.add(platform);
+                    card.classList.add('connected');
+                    
+                    // Add status badge
+                    const badge = document.createElement('div');
+                    badge.className = 'status-badge';
+                    badge.textContent = 'مربوط';
+                    card.appendChild(badge);
+                    
+                    button.textContent = 'إلغاء الربط';
+                    button.className = 'connect-btn disconnect';
+                    button.disabled = false;
+                    button.onclick = () => connectPlatform(platform);
+                    
+                    updateConnectedCount();
+                    
+                    // Show success message
+                    showNotification(`تم ربط ${platform} بنجاح! ✅`);
+                }, 1500);
+            }
+            
+            updateConnectedCount();
+        }
+
+        function connectAll() {
+            const platforms = ['facebook', 'instagram', 'twitter', 'linkedin', 'tiktok', 'youtube', 'snapchat', 'pinterest'];
+            
+            platforms.forEach((platform, index) => {
+                setTimeout(() => {
+                    if (!connectedPlatforms.has(platform)) {
+                        connectPlatform(platform);
+                    }
+                }, index * 500);
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 255, 0, 0.9);
+                color: black;
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        updateConnectedCount();
+
+        // Save connected platforms to localStorage
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('flowai_connected_platforms', JSON.stringify([...connectedPlatforms]));
+        });
+
+        // Load previously connected platforms
+        const savedPlatforms = JSON.parse(localStorage.getItem('flowai_connected_platforms') || '[]');
+        savedPlatforms.forEach(platform => {
+            connectedPlatforms.add(platform);
+            const card = document.querySelector(`[data-platform="${platform}"]`);
+            if (card) {
+                card.classList.add('connected');
+                const badge = document.createElement('div');
+                badge.className = 'status-badge';
+                badge.textContent = 'مربوط';
+                card.appendChild(badge);
+                
+                const button = card.querySelector('.connect-btn');
+                button.textContent = 'إلغاء الربط';
+                button.className = 'connect-btn disconnect';
+                button.onclick = () => connectPlatform(platform);
+            }
+        });
+        updateConnectedCount();
+    </script>
+</body>
+</html>
+
+
+        // Real platform connection functions
+        async function connectTwitterReal() {
+            const username = document.getElementById('twitterUsername').value;
+            
+            if (!username.trim()) {
+                showNotification('يرجى إدخال اسم المستخدم', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/connect-twitter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('تم ربط Twitter بنجاح!', 'success');
+                    updatePlatformStatusReal('twitter', 'connected', data.connection);
+                } else {
+                    showNotification(data.error || 'فشل في ربط Twitter', 'warning');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('خطأ في الاتصال بالخادم', 'warning');
+            }
+        }
+        
+        async function connectLinkedInReal() {
+            const email = document.getElementById('linkedinEmail').value;
+            
+            if (!email.trim()) {
+                showNotification('يرجى إدخال البريد الإلكتروني', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/connect-linkedin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification('تم ربط LinkedIn بنجاح!', 'success');
+                    updatePlatformStatusReal('linkedin', 'connected', data.connection);
+                } else {
+                    showNotification(data.error || 'فشل في ربط LinkedIn', 'warning');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('خطأ في الاتصال بالخادم', 'warning');
+            }
+        }
+        
+        function updatePlatformStatusReal(platform, status, connectionData) {
+            const platformCard = document.querySelector(`[data-platform="${platform}"]`);
+            if (platformCard) {
+                if (status === 'connected') {
+                    platformCard.classList.add('connected');
+                    connectedPlatforms.add(platform);
+                    
+                    // Add status badge
+                    let badge = platformCard.querySelector('.status-badge');
+                    if (!badge) {
+                        badge = document.createElement('div');
+                        badge.className = 'status-badge';
+                        platformCard.appendChild(badge);
+                    }
+                    badge.textContent = 'مربوط';
+                    
+                    // Update button
+                    const button = platformCard.querySelector('.connect-btn');
+                    button.textContent = 'إلغاء الربط';
+                    button.className = 'connect-btn disconnect';
+                    button.onclick = () => disconnectPlatformReal(platform);
+                    
+                    updateConnectedCount();
+                }
+            }
+        }
+        
+        async function disconnectPlatformReal(platform) {
+            try {
+                const response = await fetch('/api/disconnect-platform', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        platform: platform
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(`تم قطع ربط ${platform} بنجاح`, 'success');
+                    
+                    const platformCard = document.querySelector(`[data-platform="${platform}"]`);
+                    if (platformCard) {
+                        platformCard.classList.remove('connected');
+                        connectedPlatforms.delete(platform);
+                        
+                        const badge = platformCard.querySelector('.status-badge');
+                        if (badge) badge.remove();
+                        
+                        const button = platformCard.querySelector('.connect-btn');
+                        button.textContent = 'ربط الآن';
+                        button.className = 'connect-btn';
+                        button.onclick = () => connectPlatform(platform);
+                        
+                        updateConnectedCount();
+                    }
+                } else {
+                    showNotification(data.error || 'فشل في قطع الربط', 'warning');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('خطأ في الاتصال بالخادم', 'warning');
+            }
+        }
+        
+        // Load connected platforms on page load
+        async function loadConnectedPlatforms() {
+            try {
+                const response = await fetch('/api/get-connected-platforms');
+                const data = await response.json();
+                
+                if (data.success) {
+                    data.platforms.forEach(platform => {
+                        updatePlatformStatusReal(platform.platform, 'connected', platform);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading connected platforms:', error);
+            }
+        }
+        
+        // Load connected platforms when page loads
+        document.addEventListener('DOMContentLoaded', loadConnectedPlatforms);
+
+        // Override existing connect functions for Twitter and LinkedIn
+        const originalConnectPlatform = connectPlatform;
+        connectPlatform = function(platform) {
+            if (platform === 'twitter') {
+                connectTwitterReal();
+            } else if (platform === 'linkedin') {
+                connectLinkedInReal();
+            } else {
+                originalConnectPlatform(platform);
+            }
+        };
+

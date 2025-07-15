@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء محتوى - FlowAI</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 2rem 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1::before {
+            content: "🤖";
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border-right-color: #00ff00;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            color: black;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .content-creator {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        .editor-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .toolbar-btn.active {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .content-input {
+            width: 100%;
+            min-height: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+        }
+
+        .content-input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .char-counter {
+            text-align: left;
+            margin-top: 0.5rem;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            color: #00ff00;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-btn {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .platform-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .platform-btn.selected {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .template-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-item:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .template-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #00ff00;
+        }
+
+        .template-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .hashtag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .hashtag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hashtag:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .schedule-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .schedule-input {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .schedule-input:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            margin-top: 1rem;
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preview-tab.active {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .preview-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            min-height: 200px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .ai-suggestions {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ai-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-title::before {
+            content: "🤖";
+        }
+
+        @media (max-width: 1200px) {
+            .content-creator {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .header-actions {
+                justify-content: center;
+            }
+            
+            .editor-toolbar {
+                justify-content: center;
+            }
+            
+            .schedule-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h1>FlowAI</h1>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    لوحة التحكم
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="create-content.html" class="nav-link active">
+                    <span class="nav-icon">✍️</span>
+                    إنشاء محتوى
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="manage-posts.html" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    إدارة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="schedule-setup.html" class="nav-link">
+                    <span class="nav-icon">📅</span>
+                    جدولة المنشورات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="analytics.html" class="nav-link">
+                    <span class="nav-icon">📈</span>
+                    التحليلات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="connect-platforms.html" class="nav-link">
+                    <span class="nav-icon">🔗</span>
+                    المنصات المربوطة
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    الإعدادات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    تسجيل الخروج
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">
+                ✍️ إنشاء محتوى جديد
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="saveDraft()">
+                    💾 حفظ كمسودة
+                </button>
+                <button class="btn btn-primary" onclick="publishContent()">
+                    🚀 نشر الآن
+                </button>
+            </div>
+        </div>
+
+        <!-- AI Suggestions -->
+        <div class="ai-suggestions">
+            <div class="ai-title">اقتراحات الذكاء الاصطناعي</div>
+            <p>💡 أفضل وقت للنشر اليوم: 9:00 صباحاً و 6:00 مساءً</p>
+            <p>📈 المحتوى التعليمي يحقق تفاعل أعلى بنسبة 25% لجمهورك</p>
+            <p>🔥 الهاشتاغات الرائجة: #تسويق_رقمي #ذكاء_اصطناعي #ريادة_اعمال</p>
+        </div>
+
+        <div class="content-creator">
+            <!-- Editor Section -->
+            <div class="editor-section">
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="formatText('bold')" title="عريض">
+                        <strong>B</strong>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('italic')" title="مائل">
+                        <em>I</em>
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('underline')" title="تحته خط">
+                        <u>U</u>
+                    </button>
+                    <button class="toolbar-btn" onclick="insertEmoji()" title="إيموجي">
+                        😊
+                    </button>
+                    <button class="toolbar-btn" onclick="insertHashtag()" title="هاشتاغ">
+                        #
+                    </button>
+                    <button class="toolbar-btn" onclick="insertMention()" title="منشن">
+                        @
+                    </button>
+                    <button class="toolbar-btn" onclick="insertLink()" title="رابط">
+                        🔗
+                    </button>
+                    <button class="toolbar-btn" onclick="generateAI()" title="إنشاء بالذكاء الاصطناعي">
+                        🤖
+                    </button>
+                </div>
+                
+                <textarea 
+                    class="content-input" 
+                    id="contentText"
+                    placeholder="ابدأ بكتابة محتواك هنا... يمكنك استخدام الأدوات أعلاه لتنسيق النص أو الاستعانة بالذكاء الاصطناعي لإنشاء محتوى مميز."
+                    oninput="updateCharCount(); updatePreview();"
+                ></textarea>
+                
+                <div class="char-counter">
+                    <span id="charCount">0</span> / 2200 حرف
+                </div>
+            </div>
+
+            <!-- Sidebar Panel -->
+            <div class="sidebar-panel">
+                <!-- Platform Selection -->
+                <div class="panel-section">
+                    <h3 class="panel-title">📱 اختر المنصات</h3>
+                    <div class="platform-selector">
+                        <button class="platform-btn selected" onclick="togglePlatform(this, 'facebook')">
+                            📘 Facebook
+                        </button>
+                        <button class="platform-btn selected" onclick="togglePlatform(this, 'instagram')">
+                            📷 Instagram
+                        </button>
+                        <button class="platform-btn" onclick="togglePlatform(this, 'twitter')">
+                            🐦 Twitter
+                        </button>
+                        <button class="platform-btn" onclick="togglePlatform(this, 'linkedin')">
+                            💼 LinkedIn
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Templates -->
+                <div class="panel-section">
+                    <h3 class="panel-title">📝 قوالب المحتوى</h3>
+                    <div class="template-grid">
+                        <div class="template-item" onclick="useTemplate('promotional')">
+                            <div class="template-title">محتوى ترويجي</div>
+                            <div class="template-desc">عروض وخصومات ومنتجات جديدة</div>
+                        </div>
+                        <div class="template-item" onclick="useTemplate('educational')">
+                            <div class="template-title">محتوى تعليمي</div>
+                            <div class="template-desc">نصائح ومعلومات مفيدة</div>
+                        </div>
+                        <div class="template-item" onclick="useTemplate('behind-scenes')">
+                            <div class="template-title">خلف الكواليس</div>
+                            <div class="template-desc">لمحة عن العمل اليومي</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hashtag Suggestions -->
+                <div class="panel-section">
+                    <h3 class="panel-title"># اقتراحات الهاشتاغ</h3>
+                    <div class="hashtag-suggestions">
+                        <span class="hashtag" onclick="addHashtag('#تسويق_رقمي')">#تسويق_رقمي</span>
+                        <span class="hashtag" onclick="addHashtag('#ذكاء_اصطناعي')">#ذكاء_اصطناعي</span>
+                        <span class="hashtag" onclick="addHashtag('#ريادة_اعمال')">#ريادة_اعمال</span>
+                        <span class="hashtag" onclick="addHashtag('#تطوير_الذات')">#تطوير_الذات</span>
+                        <span class="hashtag" onclick="addHashtag('#نجاح')">#نجاح</span>
+                        <span class="hashtag" onclick="addHashtag('#ابداع')">#ابداع</span>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="panel-section">
+                    <h3 class="panel-title">⏰ جدولة النشر</h3>
+                    <div class="schedule-section">
+                        <input type="date" class="schedule-input" id="scheduleDate">
+                        <input type="time" class="schedule-input" id="scheduleTime">
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="schedulePost()">
+                        📅 جدولة المنشور
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <h3 class="panel-title">👁️ معاينة المنشور</h3>
+            <div class="preview-tabs">
+                <button class="preview-tab active" onclick="switchPreview('facebook')">Facebook</button>
+                <button class="preview-tab" onclick="switchPreview('instagram')">Instagram</button>
+                <button class="preview-tab" onclick="switchPreview('twitter')">Twitter</button>
+                <button class="preview-tab" onclick="switchPreview('linkedin')">LinkedIn</button>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <p><strong>مطعم الذوق الأصيل</strong></p>
+                <p id="previewText">ابدأ بكتابة محتواك لرؤية المعاينة هنا...</p>
+                <div style="margin-top: 1rem; color: #ccc; font-size: 0.9rem;">
+                    👍 إعجاب • 💬 تعليق • 📤 مشاركة
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlatforms = ['facebook', 'instagram'];
+        let currentPreview = 'facebook';
+
+        // Set default date and time
+        document.getElementById('scheduleDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('scheduleTime').value = '09:00';
+
+        function updateCharCount() {
+            const text = document.getElementById('contentText').value;
+            document.getElementById('charCount').textContent = text.length;
+        }
+
+        function updatePreview() {
+            const text = document.getElementById('contentText').value;
+            const previewText = document.getElementById('previewText');
+            previewText.textContent = text || 'ابدأ بكتابة محتواك لرؤية المعاينة هنا...';
+        }
+
+        function togglePlatform(btn, platform) {
+            btn.classList.toggle('selected');
+            if (selectedPlatforms.includes(platform)) {
+                selectedPlatforms = selectedPlatforms.filter(p => p !== platform);
+            } else {
+                selectedPlatforms.push(platform);
+            }
+        }
+
+        function switchPreview(platform) {
+            document.querySelectorAll('.preview-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            currentPreview = platform;
+            updatePreview();
+        }
+
+        function formatText(command) {
+            const textarea = document.getElementById('contentText');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            let formattedText = selectedText;
+            switch(command) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'underline':
+                    formattedText = `_${selectedText}_`;
+                    break;
+            }
+            
+            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+            updateCharCount();
+            updatePreview();
+        }
+
+        function insertEmoji() {
+            const emojis = ['😊', '🎉', '💡', '🚀', '❤️', '👍', '🔥', '✨', '💪', '🌟'];
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            insertAtCursor(randomEmoji);
+        }
+
+        function insertHashtag() {
+            insertAtCursor('#');
+        }
+
+        function insertMention() {
+            insertAtCursor('@');
+        }
+
+        function insertLink() {
+            const url = prompt('أدخل الرابط:');
+            if (url) {
+                insertAtCursor(`[رابط](${url})`);
+            }
+        }
+
+        function insertAtCursor(text) {
+            const textarea = document.getElementById('contentText');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            
+            textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            textarea.focus();
+            updateCharCount();
+            updatePreview();
+        }
+
+        function addHashtag(hashtag) {
+            insertAtCursor(hashtag + ' ');
+        }
+
+        function useTemplate(type) {
+            const templates = {
+                promotional: `🎉 عرض خاص لفترة محدودة!
+
+احصل على خصم 30% على جميع منتجاتنا
+✨ جودة عالية
+🚚 توصيل مجاني
+💯 ضمان الجودة
+
+#عرض_خاص #خصم #جودة_عالية`,
+
+                educational: `💡 نصيحة اليوم:
+
+كيف تحسن من إنتاجيتك في العمل؟
+
+1️⃣ ضع أهدافاً واضحة
+2️⃣ نظم وقتك بذكاء
+3️⃣ خذ فترات راحة منتظمة
+4️⃣ تعلم مهارات جديدة
+
+#تطوير_الذات #إنتاجية #نصائح`,
+
+                'behind-scenes': `🎬 خلف الكواليس:
+
+شاهد كيف نحضر منتجاتنا بعناية فائقة
+👨‍🍳 فريق محترف
+🥘 مكونات طازجة
+❤️ حب وشغف في كل تفصيل
+
+#خلف_الكواليس #جودة #فريق_العمل`
+            };
+
+            document.getElementById('contentText').value = templates[type];
+            updateCharCount();
+            updatePreview();
+        }
+
+        function generateAI() {
+            const aiTexts = [
+                `🤖 محتوى مُنشأ بالذكاء الاصطناعي:
+
+في عالم يتطور بسرعة البرق، نحن نؤمن بأن الابتكار هو مفتاح النجاح. 
+
+✨ نقدم لكم حلولاً متطورة تواكب احتياجاتكم
+🚀 تجربة استثنائية تفوق التوقعات
+💡 أفكار إبداعية تحقق أهدافكم
+
+انضموا إلينا في رحلة التميز!
+
+#ابتكار #تميز #نجاح`,
+
+                `🌟 رسالة ملهمة من الذكاء الاصطناعي:
+
+النجاح ليس مجرد وجهة، بل رحلة مليئة بالتعلم والنمو.
+
+🎯 كل خطوة تقربك من هدفك
+💪 كل تحدٍ يجعلك أقوى
+🌱 كل يوم فرصة جديدة للتطور
+
+ابدأ اليوم، ولا تنتظر الغد!
+
+#تحفيز #إلهام #تطوير_الذات`,
+
+                `📈 نصائح للنمو من الذكاء الاصطناعي:
+
+كيف تبني علامة تجارية قوية؟
+
+1️⃣ حدد هويتك الفريدة
+2️⃣ تفاعل مع جمهورك باستمرار
+3️⃣ قدم قيمة حقيقية
+4️⃣ كن صادقاً وشفافاً
+5️⃣ تطور مع الوقت
+
+#علامة_تجارية #تسويق #نمو`
+            ];
+
+            const randomText = aiTexts[Math.floor(Math.random() * aiTexts.length)];
+            document.getElementById('contentText').value = randomText;
+            updateCharCount();
+            updatePreview();
+        }
+
+        function saveDraft() {
+            const content = document.getElementById('contentText').value;
+            if (content.trim()) {
+                // Simulate saving
+                alert('✅ تم حفظ المسودة بنجاح!');
+            } else {
+                alert('⚠️ لا يوجد محتوى للحفظ');
+            }
+        }
+
+        function publishContent() {
+            const content = document.getElementById('contentText').value;
+            if (content.trim() && selectedPlatforms.length > 0) {
+                const platformNames = selectedPlatforms.map(p => {
+                    const names = {
+                        facebook: 'Facebook',
+                        instagram: 'Instagram', 
+                        twitter: 'Twitter',
+                        linkedin: 'LinkedIn'
+                    };
+                    return names[p];
+                }).join(', ');
+                
+                alert(`🚀 تم نشر المحتوى بنجاح على: ${platformNames}`);
+                
+                // Clear form
+                document.getElementById('contentText').value = '';
+                updateCharCount();
+                updatePreview();
+            } else {
+                alert('⚠️ يرجى كتابة محتوى واختيار منصة واحدة على الأقل');
+            }
+        }
+
+        function schedulePost() {
+            const content = document.getElementById('contentText').value;
+            const date = document.getElementById('scheduleDate').value;
+            const time = document.getElementById('scheduleTime').value;
+            
+            if (content.trim() && selectedPlatforms.length > 0 && date && time) {
+                alert(`📅 تم جدولة المنشور بنجاح لتاريخ ${date} في الساعة ${time}`);
+                
+                // Clear form
+                document.getElementById('contentText').value = '';
+                updateCharCount();
+                updatePreview();
+            } else {
+                alert('⚠️ يرجى ملء جميع الحقول المطلوبة');
+            }
+        }
+    </script>
+</body>
+</html>
+
